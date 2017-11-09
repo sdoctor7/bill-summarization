@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import re
 from nltk.tokenize import sent_tokenize, word_tokenize
+import numpy as np
 
 def remove_tags(read_file):
     read_file = re.sub(b'</?external-xref[^<>]*>',b'', read_file)
@@ -228,3 +229,31 @@ def getBillsToSummaries(billDir, summariesDir):
             if flag:
                 summariesNoMatch.add(filename)
     return billsToSummary, billFiles, summariesNoMatch
+
+
+LEGISLATION_MAP = {
+    'HR': 'Bills',
+    'S': 'Bills',
+    'HJRES': 'Joint Resolutions',
+    'SJRES': 'Joint Resolutions',
+    'HCONRES': 'Concurrent Resolutions',
+    'SCONRES': 'Concurrent Resolutions',
+    'HRES': 'Simple Resolutions',
+    'SRES': 'Simple Resolutions'
+}
+
+
+def extract_nameinfo(filename):
+    match = re.search('US_Bill_Text_115_([A-Z]+)(\d+)_([A-Z]+)', filename)
+    if match:
+        return {'Type': LEGISLATION_MAP[match.group(1)],
+                'Subtype': match.group(1),
+                'Number': match.group(2),
+                'Version': match.group(3),
+                'Filename': filename}
+    else:
+        return {'Type': np.NaN,
+                'Subtype': np.NaN,
+                'Number': np.NaN,
+                'Version': np.NaN,
+                'Filename': filename}
