@@ -3,6 +3,9 @@ import pandas as pd
 import os
 import re
 from nltk.tokenize import sent_tokenize, word_tokenize
+import numpy as np
+import collections
+
 
 def remove_tags(read_file):
     read_file = re.sub(b'</?external-xref[^<>]*>',b'', read_file)
@@ -228,3 +231,42 @@ def getBillsToSummaries(billDir, summariesDir):
             if flag:
                 summariesNoMatch.add(filename)
     return billsToSummary, billFiles, summariesNoMatch
+
+
+LEGISLATION_MAP = {
+    'HR': 'Bills',
+    'S': 'Bills',
+    'HJRES': 'Joint Resolutions',
+    'SJRES': 'Joint Resolutions',
+    'HCONRES': 'Concurrent Resolutions',
+    'SCONRES': 'Concurrent Resolutions',
+    'HRES': 'Simple Resolutions',
+    'SRES': 'Simple Resolutions'
+}
+
+
+def extract_nameinfo(filename):
+    match = re.search('US_Bill_Text_115_([A-Z]+)(\d+)_([A-Z]+)', filename)
+    if match:
+        # return Type, Subtype, Number, Version, Filename
+        return LEGISLATION_MAP[match.group(1)], match.group(1), match.group(2), match.group(3), filename
+    else:
+        # return Type, Subtype, Number, Version, Filename
+        return np.NaN, np.NaN, np.NaN, np.NaN, filename
+
+
+def recursive_items(dictionary):
+    for key, value in dictionary.items():
+        if isinstance(value, dict):
+            yield (key, value)
+            yield from recursive_items(value)
+        elif isinstance(value, list):
+            for l in value:
+                if isinstance(l, dict):
+                    yield (key, value)
+                    yield from recursive_items(l)
+        else:
+            yield (key, value)
+
+
+
