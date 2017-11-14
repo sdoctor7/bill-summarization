@@ -5,6 +5,8 @@ import re
 from nltk.tokenize import sent_tokenize, word_tokenize
 import numpy as np
 import collections
+import json
+from bs4 import BeautifulSoup
 
 
 def remove_tags(read_file):
@@ -267,6 +269,43 @@ def recursive_items(dictionary):
                     yield from recursive_items(l)
         else:
             yield (key, value)
+
+
+def walk_dirs(path):
+    seen = set()
+    for root, dirs, files in os.walk(path, topdown=False):
+        if dirs:
+            parent = root
+            while parent:
+                seen.add(parent)
+                parent = os.path.dirname(parent)
+        for d in dirs:
+            d = os.path.join(root, d)
+            if d not in seen:
+                b_dir = d
+
+                if len(d.split('/')) > 6:
+                    b_version = d.split('/')[-1].upper()
+                else:
+                    b_version = 'N/A'
+                b_subtype = d.split('/')[4].upper()
+                b_type = LEGISLATION_MAP[b_subtype]
+                b_number = d.split('/')[5].upper()
+
+                summary_dir = '/'.join(x for x in d.rsplit('/')[:6]) + "/data.json"
+                with open(summary_dir) as json_data:
+                    j = json.load(json_data)
+                if j['summary']:
+                    b_summary = 1
+                else:
+                    b_summary = 0
+
+                data_dict = {
+                    'Directory': b_dir, 'Type': b_type, 'Subtype': b_subtype, 'Number': b_number,
+                    'Version': b_version, 'Summary': b_summary
+                }
+
+                yield data_dict
 
 
 
