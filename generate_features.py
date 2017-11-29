@@ -1,20 +1,37 @@
+'''
+Before running this script, run the filter_summarize.ipynb to get 
+./budget_only.tsv
+'''
 import sys
 import os
 import argparse
 import pandas as pd
 import string
 import ipdb
-from os import listdir
+from os import listdir, path
 import cPickle as pickle
 from os.path import isfile, join
 from collections import defaultdict
 from nltk.corpus import stopwords
+
+from utils import *
+import nltk
+import string
+from nltk.stem.porter import *
+from nltk.tokenize import sent_tokenize
+from nltk.tokenize import word_tokenize
+import cPickle as pickle
+from collections import defaultdict
+stemmer = nltk.PorterStemmer()
+
+
 
 _SEP_ = '<FEATURE>'
 _TITLE_SEP_ = '[]'
 _IMPACT_WORDS = set(['cost', 'amount', 'import','$'])
 _MAX_FREQ_ = 1000
 _MIN_FREQ_ = 3
+TOKEN_FREQ_FILE = "bill_title_tokens.pkl"
 def getFiles(folder, budget_only_suffix):
     billFiles = []
     summaryFiles = []
@@ -142,15 +159,33 @@ def get_and_save_features(billFiles, titleFiles,token_list,out_folder, in_folder
     print "Title matching lines", countTitle
 
 
-def main(in_folder, subset_filename, out_folder, token_frequency):
+def main(in_folder, subset_filename, out_folder):
+    
 
     try:
         os.stat(out_folder)
     except:
         os.mkdir(out_folder)
+
+
     budget_only = pd.read_table(subset_filename)
-    with open(token_frequency,'r') as f:
-        token_frequency = pickle.load(f)
+    
+    if os.path.isfile(TOKEN_FREQ_FILE):
+        print "using old bill_title_tokens file"
+        with open(TOKEN_FREQ_FILE,'r') as f:
+            token_frequency = pickle.load(f)
+    else:
+        print "generating bill_title_tokens file for first time"
+        title_tokens = pd.Series(' '.join(remove_punct(budget_only['title'])).lower().split()).value_counts()
+        token_frequency = defaultdict(int)
+        for k, v in title_tokens.iteritems():
+            token_frequency[k] += v
+        with open(TOKEN_FREQ_FILE, "w") as f:
+            pickle.dump(token_frequency, f)
+
+    ipdb.set_trace()
+    
+    
 
     token_frequency = { k:v for k, v in token_frequency.items() if v  <= _MAX_FREQ_ and v>=_MIN_FREQ_ and k not in set(stopwords.words('english'))}
     token_list = set(token_frequency.keys())
@@ -180,7 +215,6 @@ if __name__ == '__main__':
         parser.add_argument('--out', '-o', dest = 'in_folder', help = 'path to out folder that holds bill, summary and title files', default='./out3/', required = False)
         parser.add_argument('--bFile', '-b', dest = 'subset_filename', help = 'path to budget only tsv file', default="./budget_only.tsv",required = False)
         parser.add_argument('--location', '-l', dest = 'out_folder', help = 'Path where to store output', default="./out_bill_only/", required = False)
-        parser.add_argument('--token_list','-t', dest='token_frequency', help='File containing title token frequency', default = './bill_title_tokens.pkl', required=False)
         args = vars(parser.parse_args())
     except:
         print "Please specify required arguments"
