@@ -122,7 +122,6 @@ def get_and_save_features(billFiles, titleFiles,token_list,out_folder, in_folder
                 mode_line = remove_punct(line)
                 if tuple(mode_line) in titleToFileCanonical:
                     print "Exact Match"
-                    ipdb.set_trace()
                 else:
                     # impact Feature
                     for t in _IMPACT_WORDS:
@@ -181,11 +180,7 @@ def main(in_folder, subset_filename, out_folder):
         for k, v in title_tokens.iteritems():
             token_frequency[k] += v
         with open(TOKEN_FREQ_FILE, "w") as f:
-            pickle.dump(token_frequency, f)
-
-    ipdb.set_trace()
-    
-    
+            pickle.dump(token_frequency, f) 
 
     token_frequency = { k:v for k, v in token_frequency.items() if v  <= _MAX_FREQ_ and v>=_MIN_FREQ_ and k not in set(stopwords.words('english'))}
     token_list = set(token_frequency.keys())
@@ -200,9 +195,6 @@ def main(in_folder, subset_filename, out_folder):
     
     assert len(billFiles) == len(summaryFiles) == len(titleFiles)
     print "Number of budget_file in ", in_folder, " are ", len(titleFiles)
-
-
-    
 
     get_and_save_features(billFiles, titleFiles,token_list,out_folder, in_folder)
 
