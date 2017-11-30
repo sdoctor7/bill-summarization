@@ -72,9 +72,12 @@ def walk_dirs(path):
                 else:
                     b_summary = 0
 
+                b_congress = d.split('/')[2]
+                b_id = b_congress+'_'+b_number+'_'+b_version
+
                 data_dict = {
                     'Directory': b_dir, 'Type': b_type, 'Subtype': b_subtype, 'Number': b_number,
-                    'Version': b_version, 'Summary': b_summary
+                    'Version': b_version, 'Summary': b_summary, 'ID': b_id, 'Congress': b_congress
                 }
 
                 yield data_dict
