@@ -41,6 +41,7 @@ def moveFiles(filenames, folder):
         newPath = f.replace(FOLDER, folder)
         # print f, folder
         os.rename(f,newPath)
+        
 def split_dataset():
     train_list_complete = read_file_list(TRAIN)
     test_list_complete = read_file_list(TEST)
