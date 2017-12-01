@@ -78,8 +78,8 @@ def visualize():
         edges = "\n".join(edges)
         f.write(edges)
 
-    vertices = _IMPACT_WORDS
-    edges = []
+    vertices = ["Node_Name"] + _IMPACT_WORDS
+    edges = ["Node", "Impact", "Count"]
     # count_max = 400
     for idx, bill in enumerate(bill_impact):
         if idx == 300:
