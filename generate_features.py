@@ -139,9 +139,12 @@ def get_and_save_features(billFiles, titleFiles,token_list,out_folder, in_folder
                         filenames = []
                         for temp in titleToFileCanonical[closest]:
                             textOnly.append(temp[1])
-                            filenames.append(temp[0])
+
+                            tempFile = temp[0].replace(in_folder, out_folder)
+                            
+                            filenames.append(tempFile)
                         titleFeature = _TITLE_SEP_.join(filenames)
-                text+= line + _SEP_+titleFeature+_SEP_+impactFeature+"\n"
+                text+= line.strip("\n") + _SEP_+titleFeature+_SEP_+impactFeature+"\n"
                 if titleFeature!="":
                     countTitle+=1
                 if impactFeature!="":
