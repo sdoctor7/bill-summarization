@@ -115,57 +115,114 @@ def load_data(congress_number, hrsonly=None):
     return df
 
 
+# def get_recent_bills(with_summary):
+#     for bill_no in with_summary.Number.unique():
+#         df = with_summary[with_summary.Number == bill_no][with_summary.Version != 'EAS']
+#         if len(df) > 1:
+#             if 'ENR' in list(df.Version):
+#                 idx = with_summary[with_summary.Number == bill_no][with_summary.Version == 'ENR'].index
+#             else:
+#                 all_date_info = []
+#                 for folder_path in df.Directory:
+#                     date_info = {}
+#                     with open(folder_path+'/document.xml') as f:
+#                         dict1 = xmltodict.parse(f.read())
+#                     version = folder_path.split('/')[-1]
+#                     date_info['version'] = version
+#                     if 'bill' in dict1.keys():
+#                         bill = dict1['bill']
+#                         date = None
+#                         if 'form' in bill.keys():
+#                             form = bill['form']
+#                             if 'action' in form.keys():
+#                                 action = form['action']
+#                                 if isinstance(action, list):
+#                                     action_dict = action[0]
+#                                 else:
+#                                     action_dict = action
+#                                 if '@date' in action_dict.keys():
+#                                     date = action_dict['@date']
+#                                 else:
+#                                     str_date = action_dict['action-date']
+#                                     if isinstance(str_date, str):
+#                                         date = dt.strftime(dt.strptime(str_date, '%B %d, %Y'), '%Y%m%d')
+#                                     elif isinstance(str_date, dict):
+#                                         date = str_date['@date']
+#                                     else:
+#                                         print('str date', str_date)
+#                         if date == None and 'attestation' in bill.keys():
+#                             date = bill['attestation']['attestation-group']['attestation-date']['@date']
+#                     if date == None:
+#                         print('here dict', folder_path, dict1, '\n')
+#                     if date != None:
+#                         date_info['date'] = date
+#                     else:
+#                         print(folder_path)
+#                     all_date_info.append(date_info)
+#                 df2 = pd.DataFrame(all_date_info, index=range(len(all_date_info)))
+#                 to_use = df2.sort_values('date', ascending=False)['version'][0].upper()
+#                 idx = with_summary[with_summary.Number == bill_no][with_summary.Version == to_use].index
+#         else:
+#             idx = with_summary[with_summary.Number == bill_no].index
+#         with_summary.loc[idx, 'to_use'] = 1
+#     return with_summary
+
+
 def get_recent_bills(with_summary):
     for bill_no in with_summary.Number.unique():
         df = with_summary[with_summary.Number == bill_no][with_summary.Version != 'EAS']
         if len(df) > 1:
-            if 'ENR' in list(df.Version):
-                idx = with_summary[with_summary.Number == bill_no][with_summary.Version == 'ENR'].index
-            else:
-                all_date_info = []
-                for folder_path in df.Directory:
-                    date_info = {}
-                    with open(folder_path+'/document.xml') as f:
-                        dict1 = xmltodict.parse(f.read())
-                    version = folder_path.split('/')[-1]
-                    date_info['version'] = version
-                    if 'bill' in dict1.keys():
-                        bill = dict1['bill']
-                        date = None
-                        if 'form' in bill.keys():
-                            form = bill['form']
-                            if 'action' in form.keys():
-                                action = form['action']
-                                if isinstance(action, list):
-                                    action_dict = action[0]
-                                else:
-                                    action_dict = action
-                                if '@date' in action_dict.keys():
-                                    date = action_dict['@date']
-                                else:
-                                    str_date = action_dict['action-date']
-                                    if isinstance(str_date, str):
-                                        date = dt.strftime(dt.strptime(str_date, '%B %d, %Y'), '%Y%m%d')
-                                    elif isinstance(str_date, dict):
-                                        date = str_date['@date']
+            try:
+                if 'ENR' in list(df.Version):
+                    idx = with_summary[with_summary.Number == bill_no][with_summary.Version == 'ENR'].index
+                else:
+                    all_date_info = []
+                    for folder_path in df.Directory:
+                        date_info = {}
+                        with open(folder_path+'/document.xml') as f:
+                            dict1 = xmltodict.parse(f.read())
+                        version = folder_path.split('/')[-1]
+                        date_info['version'] = version
+                        if 'bill' in dict1.keys():
+                            bill = dict1['bill']
+                            date = None
+                            if 'form' in bill.keys():
+                                form = bill['form']
+                                if 'action' in form.keys():
+                                    action = form['action']
+                                    if isinstance(action, list):
+                                        action_dict = action[0]
                                     else:
-                                        print('str date', str_date)
-                        if date == None and 'attestation' in bill.keys():
-                            date = bill['attestation']['attestation-group']['attestation-date']['@date']
-                    if date == None:
-                        print('here dict', folder_path, dict1, '\n')
-                    if date != None:
-                        date_info['date'] = date
-                    else:
-                        print(folder_path)
-                    all_date_info.append(date_info)
-                df2 = pd.DataFrame(all_date_info, index=range(len(all_date_info)))
-                to_use = df2.sort_values('date', ascending=False)['version'][0].upper()
-                idx = with_summary[with_summary.Number == bill_no][with_summary.Version == to_use].index
+                                        action_dict = action
+                                    if '@date' in action_dict.keys():
+                                        date = action_dict['@date']
+                                    else:
+                                        str_date = action_dict['action-date']
+                                        if isinstance(str_date, str):
+                                            date = dt.strftime(dt.strptime(str_date, '%B %d, %Y'), '%Y%m%d')
+                                        elif isinstance(str_date, dict):
+                                            date = str_date['@date']
+                                        else:
+                                            print('str date', str_date)
+                            if date == None and 'attestation' in bill.keys():
+                                date = bill['attestation']['attestation-group']['attestation-date']['@date']
+                        if date == None:
+                            print('here dict', folder_path, dict1, '\n')
+                        if date != None:
+                            date_info['date'] = date
+                        else:
+                            print(folder_path)
+                        all_date_info.append(date_info)
+                    df2 = pd.DataFrame(all_date_info, index=range(len(all_date_info)))
+                    to_use = df2.sort_values('date', ascending=False)['version'][0].upper()
+                    idx = with_summary[with_summary.Number == bill_no][with_summary.Version == to_use].index
+            except:
+                idx = df[:1].index
         else:
             idx = with_summary[with_summary.Number == bill_no].index
         with_summary.loc[idx, 'to_use'] = 1
     return with_summary
+
 
 
 def dedup_filter_bills(df):
@@ -274,7 +331,7 @@ def split_file(data, cp='/home/lucy/stanford-corenlp/stanford-corenlp-full-2016-
 
 def concurrent_split(df):
     counts = range(1, len(df)+1)
-    outdir = os.path.join('out', df.Congress[0])
+    outdir = os.path.join('./out', df[:1].Congress[1])
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
@@ -298,6 +355,7 @@ def run_sumy(text, algo='KL', sent_count=3):
 
     return summary_list
 
+
 def convert_summary(CRS_summ):
     parser = PlaintextParser.from_string(CRS_summ, Tokenizer("english"))
     rating = dict(zip(parser.document.sentences, [1 for i in parser.document.sentences]))
@@ -307,6 +365,7 @@ def convert_summary(CRS_summ):
     crs_tuple = tuple(i.sentence for i in infos)
 
     return crs_tuple
+
 
 def eval_sumy(algo_summ, CRS_summ):
     rouge1 = rouge_n(algo_summ, CRS_summ, n=1)
