@@ -64,7 +64,7 @@ def read_text_file(text_file):
     lines = []
     with open(text_file, "r") as f:
         for line in f:
-            lines.append(line.replace('-RRB-', ')').replace('-LRB-', '(').strip())
+            lines.append(line.replace('-LRB-', '(').replace('-RRB-', '').strip())
     return lines
 
 
@@ -75,29 +75,6 @@ def fix_missing_period(line):
     if line[-1] in END_TOKENS: return line
     # print(line[-1])
     return line + " ."
-
-
-def get_bill(id):
-    file_path = './tmp/out3/' + type + '_' + id + '.out'
-
-    lines = read_text_file(file_path)
-
-    # Lowercase everything
-    lines = [line.lower() for line in lines]
-
-    # Put periods on the ends of lines that are missing them (this is a problem in the dataset because many image captions don't end in periods; consequently they end up in the body of the article as run-on sentences)
-    lines = [fix_missing_period(line) for line in lines]
-
-    if type == 'BILL':
-        # Make article into a single string
-        text = ' '.join(lines)
-    elif type == 'SUMMARY':
-        # Make abstract into a signle string, putting <s> and </s> tags around the sentences
-        text = ' '.join(["%s %s %s" % (SENTENCE_START, sent, SENTENCE_END) for sent in lines])
-    else:
-        sys.exit("Invalid file type. It should be BILL or SUMMARY.")
-
-    return text
 
 
 def get_data(id, type):
@@ -171,8 +148,8 @@ def write_to_bin(df, out_file, makevocab=False):
                 idx, num_data, float(idx) * 100.0 / float(num_data)))
 
             # Get the strings to write to .bin file
-            bill = get_data(row.id, 'BILL')
-            summary = get_data(row.id, 'SUMMARY')
+            bill = get_data(row.ID, 'BILL')
+            summary = get_data(row.ID, 'SUMMARY')
 
             # Write to tf.Example
             tf_example = example_pb2.Example()
@@ -206,10 +183,9 @@ def write_to_bin(df, out_file, makevocab=False):
 
 
 if __name__ == '__main__':
-
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
       print("USAGE: python make_datafiles.py <data_dir> <train_list_dir> <validate_list_dir> <test_list_dir>")
-      print("e.g. python make_datafiles.py './tmp/out3' './data/train.txt' './data/validate.txt' './data/test.txt'")
+      print("e.g. python make_datafiles.py './out/113_114_115' './out/train_113_114_115.csv' './out/validate_113_114_115.csv' './out/test_113_114_115.csv'")
       sys.exit()
     # cnn_stories_dir = sys.argv[1]
     # dm_stories_dir = sys.argv[2]
@@ -218,11 +194,6 @@ if __name__ == '__main__':
     train_dir = sys.argv[2]
     validate_dir = sys.argv[3]
     test_dir = sys.argv[4]
-
-    # data_dir = './tmp/out3'
-    # train_dir = './data/train.txt'
-    # validate_dir = './data/validate.txt'
-    # test_dir = './data/test.txt'
 
 
     # Check the stories directories contain the correct number of .story files
