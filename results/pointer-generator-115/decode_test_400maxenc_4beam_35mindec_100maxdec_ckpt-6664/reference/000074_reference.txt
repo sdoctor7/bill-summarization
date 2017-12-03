@@ -1,3 +1,0 @@
-better accounting for medicaid costs act of 2017 this bill amends title xi ( general provisions ) of the social security act to require the centers for medicare & medicaid services ( cms ) to follow rulemaking procedures with respect to certain medicaid subregulatory policies .
-before issuing a medicaid subregulatory policy , cms must determine the extent to which the policy is projected , with respect to each year in a 10-year period , to increase state or federal expenditures under the medicaid program .
-if the policy is projected to increase expenditures by an amount exceeding a specified threshold , cms may implement the policy only through notice and comment rulemaking .

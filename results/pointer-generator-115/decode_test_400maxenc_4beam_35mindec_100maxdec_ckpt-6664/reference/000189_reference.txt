@@ -1,9 +1,0 @@
-preserve access to affordable generics act this bill amends the federal trade commission act to authorize the federal trade commission ( ftc ) to initiate proceedings against parties to any agreement resolving or settling a patent infringement claim in connection with the sale of a drug .
-such an agreement , with specified exceptions , is presumed to have anticompetitive effects and is a violation of this bill if the filer of the abbreviated new drug ( generic ) application receives anything of value and agrees to limit or forego research , development , manufacturing , marketing , or sales of the generic drug .
-an agreement is exempted if the only consideration granted to the generic manufacturer is : ( 1 ) the right to market the generic drug prior to the expiration of any statutory exclusivity , ( 2 ) a payment for reasonable litigation expenses , or ( 3 ) a covenant not to sue on any claim that the generic drug infringes a patent .
-an entity subject to an ftc enforcement order may petition for the order be reviewed in federal court .
-civil penalties are imposed for violations of this bill .
-this bill amends the medicare prescription drug , improvement , and modernization act of 2003 to require a brand name manufacturer and generic manufacturer to submit to the ftc any other agreements the parties enter into within 30 days of entering into an agreement related to the manufacturing , marketing , sale , or exclusivity period of a drug .
-this bill amends the federal food , drug , and cosmetic act to forfeit the 180-day exclusivity period for a generic drug if the ftc or a court decides that an agreement violated this bill .
-the ftc is granted exclusive authority to litigate matters relating to anticompetitive practices in connection with the sale of generic drugs .
-the ftc may not commence enforcement actions ( other than cease and desist requests ) more than six years after the ftc is notified of an agreement .
