@@ -2,14 +2,19 @@ import xmltodict
 import pandas as pd
 import os
 import re
-# from nltk.tokenize import sent_tokenize, word_tokenize
-# import numpy as np
-# import collections
 import json
-# from bs4 import BeautifulSoup
 from datetime import datetime as dt
 import subprocess
 import concurrent.futures
+
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lex_rank import LexRankSummarizer
+from sumy.summarizers.kl import KLSummarizer
+from sumy.nlp.stemmers import Stemmer
+from sumy.utils import get_stop_words
+from sumy.evaluation.rouge import rouge_n
+from collections import namedtuple
 
 
 LEGISLATION_MAP = {
@@ -277,4 +282,36 @@ def concurrent_split(df):
         for i, _ in zip(counts, executor.map(split_file, df.iterrows())):
             if i % 100 == 0:
                 print('Spliting file: {}/{} bills'.format(i, len(df)))
+
+                
+def run_sumy(text, algo='KL', sent_count=3):
+    parser = PlaintextParser.from_string(text, Tokenizer("english"))
+    stemmer = Stemmer("english")
+
+    if algo == 'KL':
+        summarizer = KLSummarizer(stemmer)
+    elif algo == 'LexRank':
+        summarizer = LexRankSummarizer(stemmer)
+    summarizer.stop_words = get_stop_words("english")
+
+    summary_list = summarizer(parser.document, sent_count)
+
+    return summary_list
+
+def convert_summary(CRS_summ):
+    parser = PlaintextParser.from_string(CRS_summ, Tokenizer("english"))
+    rating = dict(zip(parser.document.sentences, [1 for i in parser.document.sentences]))
+    SentenceInfo = namedtuple("SentenceInfo", ("sentence", "order", "rating",))
+    rate = lambda s: rating[s]
+    infos = (SentenceInfo(s, o, rate(s)) for o, s in enumerate(parser.document.sentences))
+    crs_tuple = tuple(i.sentence for i in infos)
+
+    return crs_tuple
+
+def eval_sumy(algo_summ, CRS_summ):
+    rouge1 = rouge_n(algo_summ, CRS_summ, n=1)
+    rouge2 = rouge_n(algo_summ, CRS_summ, n=2)
+
+    return (rouge1, rouge2)
+
 

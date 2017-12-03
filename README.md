@@ -1,6 +1,11 @@
 # bill-summarization
 Text Summarization of Congressional Bills: Fall 2017 Capstone project, Columbia University Data Science Institute and Bloomberg
 
+
+# observations
+Impact Lines 11711
+Title matching lines 2269
+
 # Initial Observations
 
 | Observation | Count |
