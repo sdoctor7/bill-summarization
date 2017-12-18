@@ -130,7 +130,7 @@ python run_summarization.py --mode=decode --data_path="/home/lucy/Workspace/bill
 # Analysis
 
 # User Interface
-http://35.196.17.188:8111/   
-The web application is built as a Flask Python web server and deployed to the Google App Engine virtual machine.
+- Link: http://35.196.17.188:8111/   
+- Introduction: The web application is built as a Flask Python web server and deployed to the Google App Engine virtual machine.
 
 
