@@ -1,0 +1,2 @@
+the small company disclosure simplification act .
+this bill directs the securities and exchange commission (sec) to elect to use xbrl for financial statements with total annual gross revenues of less than $1 250,000,000 are exempt from the requirements to use xbrl for financial statements and other periodic reporting required to be filed with the commission under the securities program.
