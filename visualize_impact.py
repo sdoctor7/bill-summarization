@@ -61,7 +61,10 @@ def visualize():
     vertices = ["Node_Name"]
     edges = ["Node_A, Node_B, Weight"]
     seen_nodes = set()
-    for (src, dest) in bill_related:
+
+    for idx, (src, dest) in enumerate(bill_related):
+        if idx==150:
+            break
         if src not in seen_nodes:
             vertices.append(src)
             seen_nodes.add(src)
@@ -82,8 +85,8 @@ def visualize():
     edges = ["Node", "Impact", "Count"]
     # count_max = 400
     for idx, bill in enumerate(bill_impact):
-        if idx == 300:
-            break
+        # if idx == 300:
+        #     break
         vertices.append(bill)
         impact_vector = bill_impact[bill]
 
