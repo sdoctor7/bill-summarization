@@ -28,7 +28,7 @@ stemmer = nltk.PorterStemmer()
 
 _SEP_ = '<FEATURE>'
 _TITLE_SEP_ = '[]'
-_IMPACT_WORDS = set(['cost', 'amount', 'import','$'])
+_IMPACT_WORDS = set(['cost', 'amount', 'import','$',"profit","loss"])
 _MAX_FREQ_ = 1000
 _MIN_FREQ_ = 3
 TOKEN_FREQ_FILE = "bill_title_tokens.pkl"
@@ -41,14 +41,26 @@ def getFiles(folder, budget_only_suffix):
             suffix = f.split("_")
             suffix = suffix[2]+"_"+suffix[3]
             if suffix[:-4] in budget_only_suffix:
-                if "BILL" in f:
-                    billFiles.append(folder+f)
-                elif "SUMMARY" in f:
-                    summaryFiles.append(folder+f)
-                elif "TITLE" in f:
-                    titleFiles.append(folder+f)
+                pass
+            if "BILL" in f:
+                billFiles.append(folder+f)
+            elif "SUMMARY" in f:
+                summaryFiles.append(folder+f)
+            elif "TITLE" in f:
+                titleFiles.append(folder+f)
 
-    return billFiles, summaryFiles, titleFiles
+    billFiles_subset = []
+    summaryFiles_subset = []
+    titleFiles_subset = []
+    for t in titleFiles:
+        b = t.replace("TITLE","BILL")
+        s = t.replace("TITLE", "SUMMARY")
+        if b in billFiles and s in summaryFiles:
+            titleFiles_subset.append(t)
+            summaryFiles_subset.append(s)
+            billFiles_subset.append(b)
+
+    return billFiles_subset, summaryFiles_subset, titleFiles_subset
 def remove_punct(array):
     array = array.lower().split()
     result = []
@@ -66,7 +78,10 @@ def create_title_dict(titleFiles, token_list):
     titleToFileOriginal = defaultdict(list)
     for titleFile in titleFiles:
         with open(titleFile, "r") as f:
-            title = f.readlines()[0]
+            
+            title = f.readlines()
+            title = title[0]
+            # ipdb.set_trace()
             valid = []
             mtitle = remove_punct(title)
             for token in token_list:
@@ -144,6 +159,9 @@ def get_and_save_features(billFiles, titleFiles,token_list,out_folder, in_folder
                             
                             filenames.append(tempFile)
                         titleFeature = _TITLE_SEP_.join(filenames)
+                        if len(filenames)>1:
+                            print line,textOnly
+                            raw_input()
                 text+= line.strip("\n") + _SEP_+titleFeature+_SEP_+impactFeature+"\n"
                 if titleFeature!="":
                     countTitle+=1
@@ -209,7 +227,7 @@ if __name__ == '__main__':
         parser=argparse.ArgumentParser(description = 'Script to extract Features for data')
         parser.add_argument('--out', '-o', dest = 'in_folder', help = 'path to out folder that holds bill, summary and title files', default='./out3/', required = False)
         parser.add_argument('--bFile', '-b', dest = 'subset_filename', help = 'path to budget only tsv file', default="./budget_only.tsv",required = False)
-        parser.add_argument('--location', '-l', dest = 'out_folder', help = 'Path where to store output', default="./out_bill_only/", required = False)
+        parser.add_argument('--location', '-l', dest = 'out_folder', help = 'Path where to store output', default="./out_all/", required = False)
         args = vars(parser.parse_args())
     except:
         print "Please specify required arguments"
